@@ -1,0 +1,17 @@
+﻿@page "/personas/create"
+@inject HttpClient http
+@inject NavigationManager uriHelper
+<h3>Create</h3>
+<Form ButtonText="Crear Persona" per="@per"
+	OnValidSubmit="@CreatePerson"/><!-- se usa el formulario que se creo en la misma carpeta. 
+
+	se pasan como parametros el texto del boton, el modelo de la persona y el metodo que se va a llamar al dar clic en el boton-->
+
+@code {
+	Persona per = new Persona();
+	async Task CreatePerson()
+	{
+		await http.PostAsJsonAsync("api/persona", per); // se envia los datos a la bd
+		uriHelper.NavigateTo("personas"); //cuando se guarde navega a la pagina de personas
+	}
+}

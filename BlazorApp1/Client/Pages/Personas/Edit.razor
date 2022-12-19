@@ -1,0 +1,22 @@
+﻿@page "/personas/edit/{personId:int}"
+@inject HttpClient http
+@inject NavigationManager uriHelper
+@inject IJSRuntime js
+<h3>Edit</h3>
+<Form ButtonText="Editar" per="@per" OnValidSubmit="@EditPerson" />
+@code {
+	[Parameter] public int personId { get; set; }
+	Persona per = new Persona();
+
+	protected async override Task OnParametersSetAsync() //a la espera de un parametro
+	{
+		per = await http.GetFromJsonAsync<Persona>($"api/persona/{personId}"); // cuando el parametro es obtenido se llena el formulario automaticamente.
+	}
+
+	async Task EditPerson()
+	{
+		await http.PutAsJsonAsync("api/persona", per);
+		await js.InvokeVoidAsync("alert", $"la persona {per.Name} {per.Lastname} ha sido editada.");
+		uriHelper.NavigateTo("personas");
+	}
+}

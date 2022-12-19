@@ -1,0 +1,61 @@
+﻿<h3>Form</h3>
+<EditForm Model="@per" OnValidSubmit="@OnValidSubmit">
+	<DataAnnotationsValidator/>
+	<div class="form-group">
+		<label>Nombre: </label>
+		<div>
+			<InputText @bind-Value="@per.Name"/>
+			<ValidationMessage For="@(()=>per.Name)"/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label>Apellido: </label>
+		<div>
+			<InputText @bind-Value="@per.Lastname"/>
+			<ValidationMessage For="@(()=>per.Lastname)"/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label>Fecha de nacimeinto: </label>
+		<div>
+			<InputDate @bind-Value="@per.Birthdate"/>
+			<ValidationMessage For="@(()=>per.Birthdate)"/>
+		</div>
+	</div>
+	<div class="form-group">
+		<label>Experiencia: </label>
+		<div>
+			<InputNumber @bind-Value="@per.Experience" />
+			<ValidationMessage For="@(()=>per.Experience)" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label>Telefono: </label>
+		<div>
+			<InputText @bind-Value="@per.Phone" />
+			<ValidationMessage For="@(()=>per.Phone)" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label>Correo: </label>
+		<div>
+			<InputText @bind-Value="@per.Email" />
+			<ValidationMessage For="@(()=>per.Email)" />
+		</div>
+	</div>
+	@*<div class="form-group">
+		<label>Activo: </label>
+		<div>
+			<InputCheckbox @bind-Value="@per.IsDeleted" />
+			<ValidationMessage For="@(()=>per.IsDeleted)" />
+		</div>
+	</div>*@
+	<button type="submit" class="btn btn-success">
+		@ButtonText
+	</button>
+</EditForm>
+@code {
+	[Parameter] public Persona per { get; set; }
+	[Parameter] public string ButtonText { get; set; } = "Guardar";
+	[Parameter] public EventCallback OnValidSubmit { get; set; }
+}

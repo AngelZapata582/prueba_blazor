@@ -1,0 +1,91 @@
+﻿@page "/puestos"
+@inject HttpClient client
+@inject IJSRuntime js
+<h3>Puestos</h3>
+<div>
+	@if(puesto != null){
+		<div>@puesto.ToString()</div>
+	}
+	<form>
+		<div class="row">
+			<div class="col-3">
+				<label for="puesto">Puesto</label>
+				<input type="text" class="form-control" id="puesto" aria-label="First name" @bind-value="puesto.Value">
+			</div>
+		</div>
+		<button class="btn btn-success" type="button" @onclick="Save">Add</button>
+	</form>
+</div>
+@if(puestos == null)
+{
+	<div class="d-flex justify-content-center">
+		<div class="spinner-border mx-2" role="status">
+		</div>
+		<div>Cargando puestos..</div>
+	</div>
+}
+else if(puestos.Length == 0)
+{
+	<div class="d-flex justify-content-center">
+		No hay puestos
+	</div>
+}
+else
+{
+	<table>
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Valor</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach(Puesto puesto in puestos)
+			{
+				<tr>
+					<td>@puesto.Id</td>
+					<td>@puesto.Value</td>
+					<td>
+						<button class="btn btn-warning" @onclick="@(()=>Edit(@puesto.Id))">Edit</button>
+						<button class="btn btn-danger" @onclick="@(() => Delete(@puesto.Id))">Delete</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+@code {
+	Puesto puesto = new Puesto();
+	Puesto[] puestos { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		puestos = await client.GetFromJsonAsync<Puesto[]>("api/puesto");
+	}
+
+	async Task Delete(int puestoId)
+	{
+		var p = puestos.First(x => x.Id == puestoId);
+		if(await js.InvokeAsync<bool>("confirm","Quire eliminar el puesto?"))
+		{
+			await client.DeleteAsync($"api/puesto/{puestoId}");
+			await OnInitializedAsync();
+		}
+	}
+
+	private void Edit(int id)
+	{
+		puesto = puestos.FirstOrDefault(x => x.Id == id);
+		Console.WriteLine(puesto.ToString());
+	}
+
+	async Task Save()
+	{
+		Console.WriteLine(puesto.Id.ToString(),puesto.Value);
+		await client.PostAsJsonAsync("api/puesto",puesto);
+		puesto = new Puesto();
+		await OnInitializedAsync();
+	}
+
+}
