@@ -3,18 +3,17 @@
 @inject IJSRuntime js
 <h3>Puestos</h3>
 <div>
-	@if(puesto != null){
-		<div>@puesto.ToString()</div>
-	}
-	<form>
-		<div class="row">
-			<div class="col-3">
-				<label for="puesto">Puesto</label>
-				<input type="text" class="form-control" id="puesto" aria-label="First name" @bind-value="puesto.Value">
-			</div>
+	<input @bind="searchValue" @bind:event="oninput"/>
+	<EditForm Model="@puesto" Context="formContext" OnValidSubmit="Save" OnInvalidSubmit="Error">
+		<DataAnnotationsValidator/>
+		<ValidationSummary/>
+		<div>
+			<InputText class="form-control" @bind-Value="@puesto.Value"/>
+			<ValidationMessage For="@(()=>puesto.Value)" />
 		</div>
-		<button class="btn btn-success" type="button" @onclick="Save">Add</button>
-	</form>
+		
+		<button class="btn btn-success" type="submit">Add</button>
+	</EditForm>
 </div>
 @if(puestos == null)
 {
@@ -32,7 +31,7 @@ else if(puestos.Length == 0)
 }
 else
 {
-	<table>
+	<table class="table stable-striped">
 		<thead>
 			<tr>
 				<th>Id</th>
@@ -43,6 +42,8 @@ else
 		<tbody>
 			@foreach(Puesto puesto in puestos)
 			{
+				if (!Search(@puesto))
+					continue;
 				<tr>
 					<td>@puesto.Id</td>
 					<td>@puesto.Value</td>
@@ -56,8 +57,19 @@ else
 	</table>
 }
 @code {
+	public string searchValue { get; set; }
 	Puesto puesto = new Puesto();
 	Puesto[] puestos { get; set; }
+
+	private bool Search(Puesto puesto)
+	{
+		if (string.IsNullOrWhiteSpace(searchValue)) return true;
+		if(puesto.Value.Contains(searchValue, StringComparison.OrdinalIgnoreCase) || puesto.Id.ToString().Contains(searchValue,StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
+		}
+		return false;
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -86,6 +98,11 @@ else
 		await client.PostAsJsonAsync("api/puesto",puesto);
 		puesto = new Puesto();
 		await OnInitializedAsync();
+	}
+
+	protected void Error()
+	{
+		js.InvokeVoidAsync("warning", "Formulario no valido");
 	}
 
 }

@@ -3,12 +3,18 @@
 @inject NavigationManager uriHelper
 <h3>Create</h3>
 <Form ButtonText="Crear Persona" per="@per"
-	OnValidSubmit="@CreatePerson"/><!-- se usa el formulario que se creo en la misma carpeta. 
+	OnValidSubmit="@CreatePerson" Puestos="@puestos"/><!-- se usa el formulario que se creo en la misma carpeta. 
 
 	se pasan como parametros el texto del boton, el modelo de la persona y el metodo que se va a llamar al dar clic en el boton-->
 
 @code {
 	Persona per = new Persona();
+	Puesto[] puestos { get; set; }
+	protected override async Task OnInitializedAsync()
+	{
+		puestos = await http.GetFromJsonAsync<Puesto[]>("api/puesto");
+	}
+
 	async Task CreatePerson()
 	{
 		await http.PostAsJsonAsync("api/persona", per); // se envia los datos a la bd

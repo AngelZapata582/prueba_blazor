@@ -3,13 +3,15 @@
 @inject NavigationManager uriHelper
 @inject IJSRuntime js
 <h3>Edit</h3>
-<Form ButtonText="Editar" per="@per" OnValidSubmit="@EditPerson" />
+<Form ButtonText="Editar" per="@per" OnValidSubmit="@EditPerson" Puestos="@puestos"/>
 @code {
 	[Parameter] public int personId { get; set; }
 	Persona per = new Persona();
+	Puesto[] puestos;
 
 	protected async override Task OnParametersSetAsync() //a la espera de un parametro
 	{
+		puestos = await http.GetFromJsonAsync<Puesto[]>("api/puesto");
 		per = await http.GetFromJsonAsync<Persona>($"api/persona/{personId}"); // cuando el parametro es obtenido se llena el formulario automaticamente.
 	}
 

@@ -57,7 +57,9 @@ namespace BlazorApp1.Server.Migrations
                         .UseIdentityColumn();
 
                     b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
 

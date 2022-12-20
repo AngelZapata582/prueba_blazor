@@ -1,4 +1,5 @@
-﻿<h3>Form</h3>
+﻿@inject HttpClient http
+<h3>Form</h3>
 <EditForm Model="@per" OnValidSubmit="@OnValidSubmit">
 	<DataAnnotationsValidator/>
 	<div class="form-group">
@@ -43,11 +44,25 @@
 			<ValidationMessage For="@(()=>per.Email)" />
 		</div>
 	</div>
-	@*<div class="form-group">
-		<label>Activo: </label>
+	@*<div>
+		<label>Puesto: </label>
 		<div>
-			<InputCheckbox @bind-Value="@per.IsDeleted" />
-			<ValidationMessage For="@(()=>per.IsDeleted)" />
+			<InputSelect @bind-Value="per.PuestoId" DisplayName="Puesto">
+				@if(Puestos == null)
+				{
+					<option>Cargando puestos..</option>
+				}else if(Puestos.Length == 0)
+				{
+					<option>No hay puestos</option>
+				}
+				else
+				{
+					@foreach (Puesto p in Puestos)
+					{
+						<option value="@p.Id">@p.Value</option>
+					}
+				}
+			</InputSelect>
 		</div>
 	</div>*@
 	<button type="submit" class="btn btn-success">
@@ -56,6 +71,7 @@
 </EditForm>
 @code {
 	[Parameter] public Persona per { get; set; }
+	[Parameter] public Puesto[] Puestos { get; set; }
 	[Parameter] public string ButtonText { get; set; } = "Guardar";
 	[Parameter] public EventCallback OnValidSubmit { get; set; }
 }
